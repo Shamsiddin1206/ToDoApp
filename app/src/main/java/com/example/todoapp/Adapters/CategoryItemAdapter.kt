@@ -31,20 +31,9 @@ class CategoryItemAdapter(var list: MutableList<String>, var onPressed: OnPresse
         val a = list.get(position)
         holder.nomi.text = a
         holder.card.setOnClickListener{
-            for (i in 0 until list.size){
-                if (i!=position){
-                    holder.nomi.setTextColor(Color.parseColor("#000000"))
-                    holder.card.setCardBackgroundColor(Color.parseColor("#C6E6FB"))
-                    notifyDataSetChanged()
-                }else{
-                    holder.nomi.setTextColor(Color.parseColor("#ffffff"))
-                    holder.card.setCardBackgroundColor(Color.parseColor("#2196F3"))
-                    notifyDataSetChanged()
-                }
-            }
             onPressed.onPressed(a)
+            }
         }
-    }
 
     interface OnPressed{
         fun onPressed(string: String)

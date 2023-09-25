@@ -2,6 +2,7 @@ package com.example.todoapp
 
 import android.annotation.SuppressLint
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import androidx.fragment.app.Fragment
@@ -9,7 +10,9 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.core.content.FileProvider
 import com.example.todoapp.DataBase.AppDataBase
 import com.example.todoapp.DataBase.Entities.Tasks
@@ -17,7 +20,11 @@ import com.example.todoapp.databinding.FragmentSingleTaskDetailsBinding
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
+import java.text.DateFormat
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+import java.util.Calendar
 import java.util.Date
 
 private const val ARG_PARAM1 = "param1"
@@ -85,6 +92,7 @@ class SingleTaskDetailsFragment : Fragment() {
         AppDataBase.getInstance(requireContext())
     }
     lateinit var binding: FragmentSingleTaskDetailsBinding
+    @RequiresApi(Build.VERSION_CODES.O)
     @SuppressLint("SetTextI18n")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -113,8 +121,8 @@ class SingleTaskDetailsFragment : Fragment() {
         binding.backToTaskMenu.setOnClickListener {
             if (currentFilePath.isNotEmpty()){
                 tasks.filePath = currentFilePath
-                appDatabase.getDao().updateTask(tasks)
             }
+            appDatabase.getDao().updateTask(tasks)
             parentFragmentManager.beginTransaction().replace(R.id.main, DefaultFragment()).commit()
         }
         binding.EditInfo.setOnClickListener {
@@ -151,9 +159,36 @@ class SingleTaskDetailsFragment : Fragment() {
             binding.changeTaskDone.isClickable = false
             binding.ChangeTaskCategoryName.isClickable = false
         }
+
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
         binding.btnDone.setOnClickListener {
+            var day: String = ""
+            var month: String = ""
+            var year: String = ""
+            for (i in 0 until binding.ChangeTaskDateInfo.text.toString().length){
+                if (i<2){
+                    day += binding.ChangeTaskDateInfo.text.toString()[i]
+                }
+                if (i in 3..4){
+                    month += binding.ChangeTaskDateInfo.text.toString()[i]
+                }
+                if (i in 6..9){
+                    year += binding.ChangeTaskDateInfo.text.toString()[i]
+                }
+            }
             if (!binding.ChangeTaskDateInfo.text.isNullOrEmpty()){
-                tasks.timeData = binding.ChangeTaskDateInfo.text.toString()
+                if (month.toInt()<13 && day.toInt()<32){
+                    if (year.toInt()>=currentYear && month.toInt()>=currentMonth && day.toInt()>=currentDay){
+                        tasks.timeData = setData(binding.ChangeTaskDateInfo.text.toString()).toString()
+                    }else{
+                        Toast.makeText(requireContext(), "Enter valid data", Toast.LENGTH_SHORT).show()
+                    }
+                }else{
+                    Toast.makeText(requireContext(), "Enter valid data", Toast.LENGTH_SHORT).show()
+                }
             }
             binding.TaskDateCard.visibility = View.GONE
             binding.ChangeNewTaskName.isClickable = true
@@ -176,6 +211,17 @@ class SingleTaskDetailsFragment : Fragment() {
         return binding.root
     }
 
+    private fun setData(string: String): String{
+        var src = string.toMutableList()
+        var a:String = ""
+        for (i in 0 until src.size){
+            a+="${src[i]}"
+            if ((i==1) or (i==3)){
+                a+= "/"
+            }
+        }
+        return  a
+    }
 
     companion object {
         @JvmStatic

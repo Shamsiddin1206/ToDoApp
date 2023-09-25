@@ -13,6 +13,7 @@ import com.example.todoapp.Adapters.SingleTaskAdapter
 import com.example.todoapp.DataBase.AppDataBase
 import com.example.todoapp.DataBase.Entities.Tasks
 import com.example.todoapp.databinding.FragmentTasksBinding
+import java.util.Calendar
 
 private const val ARG_PARAM1 = "param1"
 private const val ARG_PARAM2 = "param2"
@@ -90,12 +91,17 @@ class TasksFragment : Fragment() {
         binding.addTaskMenu.setOnClickListener {
             binding.addTaskCategoryOptions.visibility = View.GONE
         }
-
+        val calendar = Calendar.getInstance()
+        val currentYear = calendar.get(Calendar.YEAR)
+        val currentMonth = calendar.get(Calendar.MONTH)
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+        val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
+        val currentMinute = calendar.get(Calendar.MINUTE)
         binding.adTaskDone.setOnClickListener {
             if (!binding.addNewTaskName.text.isNullOrEmpty()){
                 appDatabase.getDao().addTask(Tasks(task_name = binding.addNewTaskName.text.toString(),
                     task_category = binding.addTaskCategoryName.text.toString(), mode = false,
-                    notificationTime = "21:00", timeData = "9/11/2023"))
+                    notificationTime = "${currentHour}:${currentMinute}", timeData = "${currentDay}/${currentMonth}/${currentYear}"))
                 singleTaskAdapter.notifyDataSetChanged()
             }
             binding.addTaskMenu.visibility = View.GONE

@@ -215,14 +215,15 @@
             <com.google.android.material.textfield.TextInputEditText
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:inputType="text"
+                android:inputType="number"
                 android:textAlignment="center"
                 android:textSize="16sp"
                 android:textColor="@color/black"
                 android:hint="Day/Month/Year"
                 android:id="@+id/ChangeTaskDateInfo"
                 android:paddingEnd="120dp"
-                android:paddingStart="15dp"/>
+                android:paddingStart="15dp"
+                android:maxLength="8"/>
         </com.google.android.material.textfield.TextInputLayout>
         <com.google.android.material.button.MaterialButton
             android:layout_width="100dp"
